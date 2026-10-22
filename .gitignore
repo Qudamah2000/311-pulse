@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Downloaded data stays out of git
+data/
+*.part
+
+# Editors
+.vscode/
+.idea/
