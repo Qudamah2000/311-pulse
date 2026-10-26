@@ -17,7 +17,7 @@
 Open Data API  ->  ingest (raw ZIPs)  ->  transform (Pandas)  ->  PostgreSQL  ->  FastAPI
 ```
 
-Only the first step exists so far. The rest follows the milestones below.
+Ingest works. The PostgreSQL schema is designed in [`sql/schema.sql`](sql/schema.sql) but not yet applied to a running database. Transform, load and the API follow the milestones below.
 
 ## Milestones
 
