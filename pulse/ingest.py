@@ -22,10 +22,29 @@ import zipfile
 from pathlib import Path
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from pulse import config
 
 MANIFEST_NAME = "manifest.json"
+
+
+def make_session() -> requests.Session:
+    """A session that retries timeouts, dropped connections and 429/5xx replies.
+
+    The city's API is sometimes slow or briefly unavailable, so one failed
+    request shouldn't end the whole run.
+    """
+    retry = Retry(
+        total=config.REQUEST_RETRIES,
+        backoff_factor=config.RETRY_BACKOFF,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+    )
+    session = requests.Session()
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+    return session
 
 
 def get_package(session: requests.Session) -> dict:
@@ -115,7 +134,7 @@ def extract(zip_path: Path, out_dir: Path) -> list[Path]:
 
 def run(years: list[int], raw_dir: Path = config.RAW_DIR, session=None) -> dict:
     """Download and unzip each requested year. Returns what happened per year."""
-    session = session or requests.Session()
+    session = session or make_session()
     package = get_package(session)
     resources = yearly_resources(package, years)
     manifest = load_manifest(raw_dir)

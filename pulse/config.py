@@ -13,5 +13,12 @@ RAW_DIR = Path("data/raw")
 # Years loaded by default.
 DEFAULT_YEARS = [2023, 2024, 2025, 2026]
 
-# Seconds to wait on a network request before giving up.
-REQUEST_TIMEOUT = 60
+# Seconds to wait on a network request: (connect, read). The server answers
+# fast when it's down, but package_show can take 90+ seconds when it's busy,
+# so the read timeout is much longer than the connect timeout.
+REQUEST_TIMEOUT = (10, 180)
+
+# How many times to retry a failed request, and the backoff factor between
+# tries (urllib3 waits backoff * 2^(try - 1) seconds: 0, 4, 8...).
+REQUEST_RETRIES = 3
+RETRY_BACKOFF = 2

@@ -130,6 +130,13 @@ def test_run_reports_years_the_dataset_does_not_have(tmp_path):
     }
 
 
+def test_make_session_retries_server_errors_on_https():
+    retry = ingest.make_session().get_adapter("https://example.test").max_retries
+    assert retry.total == ingest.config.REQUEST_RETRIES
+    assert 503 in retry.status_forcelist
+    assert retry.is_retry("GET", 503)
+
+
 def test_get_package_raises_when_ckan_reports_failure():
     class FailingSession:
         def get(self, *args, **kwargs):

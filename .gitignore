@@ -12,3 +12,6 @@ data/
 # Editors
 .vscode/
 .idea/
+
+# Personal notes for Claude
+CLAUDE.local.md
